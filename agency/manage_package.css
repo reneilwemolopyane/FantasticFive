@@ -10,7 +10,7 @@
      }
 .packages-table table { width: 100%; 
     border-collapse: collapse; 
-    background: white; border-radius: 12px;
+    background: rgb(255, 255, 255); border-radius: 12px;
      overflow: hidden;
       box-shadow: 0 4px 16px rgba(0,0,0,0.08);
      }
