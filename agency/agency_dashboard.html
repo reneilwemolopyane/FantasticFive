@@ -1,0 +1,28 @@
+<?php include 'agency_header.php'; ?>
+<link rel="stylesheet" href="agency_dashboard.css">
+<script src="dashboard.js" defer></script>
+
+<div class="dashboard-container">
+  <h1>Welcome Back, <?= htmlspecialchars($agency_name) ?> </h1>
+  <p class="subtitle">Here's an overview of your business</p>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h3>Total Packages</h3>
+      <h2>24</h2>
+      <img src="dashboard-image1.jpg" alt="Packages">
+    </div>
+    <div class="stat-card">
+      <h3>Active Bookings</h3>
+      <h2>18</h2>
+    </div>
+    <div class="stat-card">
+      <h3>Revenue This Month</h3>
+      <h2>R248,750</h2>
+    </div>
+    <div class="stat-card">
+      <h3>Group Trips</h3>
+      <h2>3</h2>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,52 @@
+<?php include '../agency_navbar.php'; ?>
+<link rel="stylesheet" href="manage_packages.css">
+<script src="manage_packages.js" ></script>
+
+<div class="manage-container">
+  <div class="page-header">
+    <h1>Manage Packages</h1>
+    <a href="create_package.php" class="btn-primary">+ Create New Package</a>
+  </div>
+
+  <div class="packages-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Image</th>
+          <th>Package Name</th>
+          <th>Destination</th>
+          <th>Price</th>
+          <th>Duration</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><img src="frontend/japan-package.jpg" alt="Japan" width="80"></td>
+          <td>Japan Escape</td>
+          <td>Tokyo</td>
+          <td>R15,999</td>
+          <td>5 Days</td>
+          <td><span class="status-active">Active</span></td>
+          <td>
+            <button class="btn-edit" onclick="editPackage(1)">Edit</button>
+            <button class="btn-delete" onclick="deletePackage(1)">Delete</button>
+          </td>
+        </tr>
+        <tr>
+          <td><img src="frontend/mauritius-package.jpg" alt="Mauritius" width="80"></td>
+          <td>Mauritius Retreat</td>
+          <td>Mauritius</td>
+          <td>R18,500</td>
+          <td>7 Days</td>
+          <td><span class="status-active">Active</span></td>
+          <td>
+            <button class="btn-edit" onclick="editPackage(2)">Edit</button>
+            <button class="btn-delete" onclick="deletePackage(2)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
