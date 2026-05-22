@@ -8,7 +8,7 @@ if (!isset($_SESSION['agency_id'])) {
 $agency_name = $_SESSION['agency_name'] ?? 'My Agency';
 ?>
 
-git clone https://github.com/reneilwemolopyane/FantasticFive.git
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -36,7 +36,7 @@ git clone https://github.com/reneilwemolopyane/FantasticFive.git
 
     <div class="nav-right">
       <div class="user-info">
-        <span>🏢</span>
+      
         <strong><?= htmlspecialchars($agency_name) ?></strong>
       </div>
       <a href="agency_profile.php" class="nav-item">Profile</a>
