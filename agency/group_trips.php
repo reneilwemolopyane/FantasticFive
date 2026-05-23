@@ -13,7 +13,7 @@
     <div class="trip-profile-card" id="group-card-1">
       <div class="card-hero-banner">
         <img src="../frontend/CPT_attraction.jpeg" alt="Cape Town Expedition">
-        <span class="departure-tag">📅 Depart: 10 June 2026</span>
+        <span class="departure-tag">Depart: 10 June 2026</span>
       </div>
       <div class="card-body-content">
         <h3>Cape Town Adventure Group</h3>
