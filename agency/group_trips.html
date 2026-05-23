@@ -1,0 +1,30 @@
+<?php include '../agency_navbar.php'; ?>
+<link rel="stylesheet" href="group_trips.css">
+<script src="group_trips.js" defer></script>
+
+<div class="group-trips-container">
+  <h1>Group Trip Management</h1>
+  <p>Track and manage your group travel experiences</p>
+
+  <div class="trip-card">
+    <h3>Cape Town Adventure Group</h3>
+    <img src="../frontend/CPT_attraction.jpeg" alt="Cape Town Group">
+    <p><strong>12 / 15 seats filled</strong></p>
+    <div class="progress-bar">
+      <div class="progress" style="width: 80%"></div>
+    </div>
+    <p>Departure: 10 June 2026 • 8 Days</p>
+    <button onclick="manageParticipants(1)">Manage Participants</button>
+  </div>
+
+  <div class="trip-card">
+    <h3>Mauritius Luxury Escape</h3>
+    <img src="../frontend/Mauritius_package.jpeg" alt="Mauritius">
+    <p><strong>5 / 12 seats filled</strong></p>
+    <div class="progress-bar">
+      <div class="progress" style="width: 42%"></div>
+    </div>
+    <p>Departure: 25 June 2026 • 7 Days</p>
+    <button onclick="manageParticipants(2)">Manage Participants</button>
+  </div>
+</div>

@@ -16,12 +16,13 @@
      }
 th, td { 
     padding: 16px; text-align: left;
-     border-bottom: 1px solid #e2e8f0;
+     border-bottom: 2px solid #202325;
      }
 th { background: #1e293b;
      color: white; 
     }
-.status-active { background: #10b981; 
+.status-active { 
+    background: #10b981; 
     color: white; padding: 4px 12px; 
     border-radius: 20px;
      font-size: 13px; 

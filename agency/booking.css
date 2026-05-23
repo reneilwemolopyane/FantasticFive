@@ -1,0 +1,37 @@
+.manage-container {
+     padding: 30px; 
+     max-width: 1400px;
+      margin: 0 auto; 
+    }
+.page-header { 
+    display: flex;
+     justify-content: space-between;
+      align-items: center; 
+      margin-bottom: 24px;
+     }
+.packages-table table {
+     width: 100%; 
+     border-collapse: collapse;
+      background: white;
+       border-radius: 12px; overflow: hidden;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+     }
+th, td { padding: 16px;
+     text-align: left;
+      border-bottom: 1px solid #e2e8f0; }
+th { 
+    background: #1e293b;
+     color: white; }
+.status-active { background: #10b981;
+     color: white; padding: 4px 12px;
+      border-radius: 20px; font-size: 13px; }
+.btn-edit { background: #2563eb;
+     color: white; border: none; padding: 8px 14px; 
+     border-radius: 6px; margin-right: 6px;
+      cursor: pointer; }
+.btn-delete { background: #ef4444;
+     color: white; border: none;
+      padding: 8px 14px; 
+      border-radius: 6px;
+       cursor: pointer;
+     }
