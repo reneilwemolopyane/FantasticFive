@@ -1,4 +1,5 @@
 <?php
+
 require_once("config.php");
 header("Content-Type: application/json");
 
@@ -328,6 +329,78 @@ if ($data["type"] === "Login") {
 
     respond(200, "success", $payload);
 }
+//HERE
+if($data["type"] === "CreatePackage") {
+    // 1. Gather text inputs
+    $packageName = isset($_POST['package_name']) ? trim($_POST['package_name']) : null;
+    $destination = isset($_POST['destination']) ? trim($_POST['destination']) : null;
+    $price       = isset($_POST['price']) ? (float)$_POST['price'] : null;
+    $duration    = isset($_POST['duration']) ? (int)$_POST['duration'] : null;
+    $description = isset($_POST['description']) ? trim($_POST['description']) : null;
+    $start_date  = isset($_POST['start_date']) ? $_POST['start_date'] : null;
+    $end_date    = isset($_POST['end_date']) ? $_POST['end_date'] : null;
+    $pack_type   = isset($_POST['pack_type']) ? trim($_POST['pack_type']) : null;   
+
+    // 2. Process File Uploads (Multiple Images)
+    $uploadedImageNames = [];
+    $uploadDir = 'uploads/'; // Make sure this folder exists on your server!
+
+    if (!empty($_FILES['images']['name'][0])) {
+        foreach ($_FILES['images']['name'] as $key => $name) {
+            $tmpName  = $_FILES['images']['tmp_name'][$key];
+            $error    = $_FILES['images']['error'][$key];
+            
+            if ($error === UPLOAD_ERR_OK) {
+                // Generate unique name to prevent overwriting files
+                $fileExtension = pathinfo($name, PATHINFO_EXTENSION);
+                $uniqueName = uniqid('pkg_', true) . '.' . $fileExtension;
+                
+                // Save physical file to your server folder
+                if (move_uploaded_file($tmpName, $uploadDir . $uniqueName)) {
+                    $uploadedImageNames[] = $uniqueName;
+                }
+            }
+        }
+    }
+
+    // Convert the array of file names to a JSON string
+    $imagesJson = json_encode($uploadedImageNames);
+
+    try {
+        // 3. MySQLi Prepared Statement (Added Images, removed trailing comma)
+        $stmt = $connection->prepare("
+            INSERT INTO package (Title, Destination, Price, Start_date, End_date, Pack_type, Duration, Description, Images)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ");
+        
+        // Data Types map to: s = string, d = double/float, i = integer
+        // $packageName (s), $destination (s), $price (d), $start_date (s), $end_date (s), $pack_type (s), $duration (i), $description (s), $imagesJson (s)
+        $stmt->bind_param("ssdssss", $Title, $destination, $price, $start_date, $end_date, $pack_type, $duration, $description, $imagesJson);
+        
+        $stmt->execute();
+        $stmt->close();
+
+        // 4. Send back success response
+        http_response_code(201);
+        echo json_encode([
+            "status" => "success", 
+            "message" => "Package created successfully with images!"
+        ]);
+
+    } catch (Exception $e) {
+        // Handle database execution errors safely
+        http_response_code(500);
+        echo json_encode([
+            "status" => "error", 
+            "message" => "Failed to create package: " . $e->getMessage()
+        ]);
+    }
+}
+else {
+    http_response_code(405);
+    echo json_encode(["status" => "error", "message" => "Invalid request method."]);
+}
+
 
 respond(400, "error", "Unknown type: " . htmlspecialchars($data["type"]));
 ?>
