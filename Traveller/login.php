@@ -185,8 +185,8 @@
     <body>
         <div class="container">
             <div class="left-panel">
-                <a href="landing_page.html" class="btn-home">← Back to Home</a>
-                <img src="Tripistry_logo.jpg" alt="Logo" class="logo">
+                <a href="landing_page.php" class="btn-home">← Back to Home</a>
+                <img src="Pictures/Tripistry_logo.jpg" alt="Logo" class="logo">
               <div class="hero-text" style="position: absolute; bottom: 40px; left: 32px; color: white;">
                   <h1 style="font-size: 36px; margin-bottom: 8px;">Welcome Back, Explorer!</h1>
                   <div class="destination-line" id="destination">✈ Explore Paris</div>
@@ -197,7 +197,7 @@
                 <h3>Welcome Back</h3>
                 <p>Login to your account</p>
                 
-                <form id="login-form" action="api.php" method="POST">
+                <form id="login-form">
                     <input type="hidden" name="type" value="Login">
                    <div class="form-group">
                        <div class="input-wrapper">
@@ -225,25 +225,55 @@
             </div>
         </div>
         <script>
-            const destinations=[
-                "✈ Explore Paris",
-                "🌏 Discover Tokyo",
-                "🌍 Adventure in Cape Town",
-                "🏝 Escape to Maldives",
-                "🗽 Experience New York"
-            ];
-            let current = 0;
-            const el = document.getElementById('destination');
-            function cycleDestination(){
-                el.classList.remove('visible');
-                setTimeout(() => {
-                    current = (current + 1) % destinations.length;
-                    el.textContent = destinations[current];
-                    el.classList.add('visible');
-                }, 600);
-            }
+    const destinations=[
+        "✈ Explore Paris",
+        "🌏 Discover Tokyo",
+        "🌍 Adventure in Cape Town",
+        "🏝 Escape to Maldives",
+        "🗽 Experience New York"
+    ];
+    let current = 0;
+    const el = document.getElementById('destination');
+    function cycleDestination(){
+        el.classList.remove('visible');
+        setTimeout(() => {
+            current = (current + 1) % destinations.length;
+            el.textContent = destinations[current];
             el.classList.add('visible');
-            setInterval(cycleDestination, 2500);
-        </script>
+        }, 600);
+    }
+    el.classList.add('visible');
+    setInterval(cycleDestination, 2500);
+
+    // Handle login form
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const formData = {
+            type: 'Login',
+            email: document.getElementById('email').value,
+            password: document.getElementById('pword').value
+        };
+
+        const response = await fetch('api.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            localStorage.setItem('user', JSON.stringify(result.data));
+            if (result.data.user_type === 'Traveller') {
+                window.location.href = 'traveller_dashboard.php';
+            } else {
+                window.location.href = 'agency_dashboard.php';
+            }
+        } else {
+            alert('Login failed: ' + result.data);
+        }
+    });
+</script>
     </body>
 </html>
