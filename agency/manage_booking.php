@@ -46,6 +46,6 @@
   </div>
 </div>
 
-<script src="bookings.js" defer></script>
+</div> <?php include 'agency_footer.php'; ?>
 </body>
 </html>

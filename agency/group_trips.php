@@ -38,6 +38,6 @@
   </div>
 </div>
 
-<script src="group_trips.js" defer></script>
+</div> <?php include 'agency_footer.php'; ?>
 </body>
 </html>

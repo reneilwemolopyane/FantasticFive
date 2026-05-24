@@ -66,6 +66,6 @@ $agency_name = $_SESSION['agency_name'] ?? 'Travel Partner';
       </div>
     </div>
   </main>
-
+</div> <?php include 'agency_footer.php'; ?>
 </body>
 </html>

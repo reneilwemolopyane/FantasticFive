@@ -1,4 +1,5 @@
 <?php include 'agency_header.php'; ?>
+
 <link rel="stylesheet" href="agency_dashboard.css">
 
 <div class="dashboard-container">
@@ -61,6 +62,6 @@
   </div>
 </div>
 
-<script src="dashboard.js" defer></script>
+</div> <?php include 'agency_footer.php'; ?>
 </body>
 </html>

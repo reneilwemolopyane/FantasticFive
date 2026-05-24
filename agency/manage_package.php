@@ -59,6 +59,6 @@
   </div>
 </div>
 
-<script src="manage_packages.js" defer></script>
+</div> <?php include 'agency_footer.php'; ?>
 </body>
 </html>
