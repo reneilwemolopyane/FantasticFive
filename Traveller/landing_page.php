@@ -516,7 +516,7 @@
         <div class="nav-bar">
             <nav>
                 <a href="#" class="nav-brand">
-                    <img src="Tripistry_logo.jpg" alt="Tripistry Logo" class="nav-logo">
+                    <img src="Pictures/Tripistry_logo.jpg" alt="Tripistry Logo" class="nav-logo">
                     <span>Tripistry</span>
                 </a>
                 <div class="nav-links">
@@ -544,35 +544,35 @@
             <h2>Popular Destinations</h2>
             <div class="destinations-grid">
                 <div class="destination-card">
-                    <img src="CPT_attraction.jpeg" alt="Cape Town">
+                    <img src="Pictures/CPT_attraction.jpeg" alt="Cape Town">
                     <div class="dest-label">
                         <h3>Cape Town</h3>
                         <p>📍 South Africa</p>
                     </div>
                 </div>
                 <div class="destination-card">
-                    <img src="Paris_attraction.jpeg" alt="Paris">
+                    <img src="Pictures/Paris_attraction.jpeg" alt="Paris">
                     <div class="dest-label">
                         <h3>Paris</h3>
                         <p>📍 France</p>
                     </div>
                 </div>
                 <div class="destination-card">
-                    <img src="Bali_attraction.jpeg" alt="Bali">
+                    <img src="Pictures/Bali_attraction.jpeg" alt="Bali">
                     <div class="dest-label">
                         <h3>Bali</h3>
                         <p>📍 Indonesia</p>
                     </div>
                 </div>
                 <div class="destination-card">
-                    <img src="Dubai_attraction.jpeg" alt="Dubai">
+                    <img src="Pictures/Dubai_attraction.jpeg" alt="Dubai">
                     <div class="dest-label">
                         <h3>Dubai</h3>
                         <p>📍 UAE</p>
                     </div>
                 </div>
                 <div class="destination-card">
-                    <img src="Zanzibar_attraction.jpeg" alt="Zanzibar">
+                    <img src="Pictures/Zanzibar_attraction.jpeg" alt="Zanzibar">
                     <div class="dest-label">
                         <h3>Zanzibar</h3>
                         <p>📍 Tanzania</p>
@@ -586,7 +586,7 @@
                 <div class="package-card">
                     <div class="package-img-wrapper">
                         <span class="rating-badge">4.8 ⭐</span>
-                        <img src="Japan_package.jpeg" alt="Japan Escape">
+                        <img src="Pictures/Japan_package.jpeg" alt="Japan Escape">
                     </div>
                     <div class="card-body">
                         <h3>Japan Escape</h3>
@@ -596,13 +596,13 @@
                         </div>
                         <p class="price">R15 999</p>
                         <p class="agency">by Wanderlust Travels</p>
-                        <a href="packages.php" class="btn-deal">View Deal</a>
+                        <a href="package_details.php" class="btn-deal">View Deal</a>
                     </div>
                 </div>
                 <div class="package-card">
                     <div class="package-img-wrapper">
                         <span class="rating-badge">4.9 ⭐</span>
-                        <img src="Mauritius_package.jpeg" alt="Mauritius Retreat">
+                        <img src="Pictures/Mauritius_package.jpeg" alt="Mauritius Retreat">
                     </div>
                     <div class="card-body">
                         <h3>Mauritius Retreat</h3>
@@ -612,13 +612,13 @@
                         </div>
                         <p class="price">R18 500</p>
                         <p class="agency">by Oceanic Holidays</p>
-                        <a href="packages.php" class="btn-deal">View Deal</a>
+                        <a href="package_details.php" class="btn-deal">View Deal</a>
                     </div>
                 </div>
                 <div class="package-card">
                     <div class="package-img-wrapper">
                         <span class="rating-badge">4.7 ⭐</span>
-                        <img src="Safari_package.jpeg" alt="Safari Adventure">
+                        <img src="Pictures/Safari_package.jpeg" alt="Safari Adventure">
                     </div>
                     <div class="card-body">
                         <h3>Safari Adventure</h3>
@@ -628,13 +628,13 @@
                         </div>
                         <p class="price">R22 000</p>
                         <p class="agency">by Wild Horizons</p>
-                        <a href="packages.php" class="btn-deal">View Deal</a>
+                        <a href="package_details.php" class="btn-deal">View Deal</a>
                     </div>
                 </div>
 
             </div>
             <div class="view-all-wrapper">
-                <a href="packages.php" class="btn-view-all">View All Packages</a>
+                <a href="package_details.php" class="btn-view-all">View All Packages</a>
             </div>
         </section>
         <section class="why-section">
@@ -665,7 +665,7 @@
         <section class="about-section" id="about">
             <div class="about-wrapper">
                 <div class="about-img">
-                    <img src="About.jpeg" alt="About Tripistry">
+                    <img src="Pictures/About.jpeg" alt="About Tripistry">
                 </div>
                 <div class="about-text">
                     <h2>About Us</h2>
@@ -711,7 +711,7 @@
         <footer class="footer">
             <div class="footer-grid">
                 <div class="footer-brand">
-                    <img src="Tripistry_logo.jpg" alt="Logo" class="footer-logo">
+                    <img src="Pictures/Tripistry_logo.jpg" alt="Logo" class="footer-logo">
                     <strong>TRIPISTRY</strong>
                     <p>Your journey.<br>Our passion.</p>
                 </div>
@@ -729,9 +729,9 @@
                     <a href="#">Privacy Policy</a>
                 </div>
                 <div class="social-icons">
-                    <a href="#"><img src="Instagram.png" alt="Instagram"></a>
-                    <a href="#"><img src="Tiktok.png" alt="Tiktok"></a>
-                    <a href="#"><img src="X.png" alt="X"></a>
+                    <a href="#"><img src="Pictures/Instagram.png" alt="Instagram"></a>
+                    <a href="#"><img src="Pictures/Tiktok.png" alt="Tiktok"></a>
+                    <a href="#"><img src="Pictures/X.png" alt="X"></a>
                 </div>
             </div>
             <script>

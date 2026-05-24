@@ -186,7 +186,7 @@
         <div class="container">
             <div class="left-panel">
                 <a href="landing_page.php" class="btn-home">← Back to Home</a>
-                <img src="Tripistry_logo.jpg" alt="Logo" class="logo">
+                <img src="Pictures/Tripistry_logo.jpg" alt="Logo" class="logo">
               <div class="hero-text" style="position: absolute; bottom: 40px; left: 32px; color: white;">
                   <h1 style="font-size: 36px; margin-bottom: 8px;">Welcome Back, Explorer!</h1>
                   <div class="destination-line" id="destination">✈ Explore Paris</div>
