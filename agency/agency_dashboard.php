@@ -62,6 +62,4 @@
   </div>
 </div>
 
-</div> <?php include 'agency_footer.php'; ?>
-</body>
-</html>
+<?php include 'agency_footer.php'; ?>
