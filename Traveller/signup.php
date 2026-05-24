@@ -167,8 +167,8 @@
     <body>
         <div class="container">
             <div class="left-panel">
-                <a href="landing_page.html" class="btn-home">← Back to Home</a>
-                <img src="Tripistry_logo.jpg" alt="Tripistry Logo" class="logo">
+                <a href="landing_page.php" class="btn-home">← Back to Home</a>
+                <img src="Pictures/Tripistry_logo.jpg" alt="Tripistry Logo" class="logo">
                 <div style="position: absolute; bottom: 40px; left: 32px; color: white;">
                     <h1 style="font-size: 36px; margin-bottom: 8px;">Join Tripistry Today!</h1>
                     <p style="font-size: 16px; opacity: 0.85;">Create an account and start your journey with us.</p>
