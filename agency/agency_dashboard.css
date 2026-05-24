@@ -108,7 +108,7 @@ body {
 }
 
 
-/* --- CORE LAYOUT STRUCTURE --- */
+
 
 .main-content-wrapper {
   padding: 110px 24px 40px 24px;
@@ -133,7 +133,7 @@ h1 {
 }
 
 
-/* --- GRID CARDS --- */
+
 
 .stats-grid {
   display: grid;
