@@ -508,6 +508,30 @@ if($data["type"] === "CreatePackage") {
 
     $destinationStmt->close();
 
+
+
+    //==== for Destination Table
+    // =========================
+$destStmt = $connection->prepare("SELECT DestinationID FROM destination WHERE City = ? LIMIT 1");
+$destStmt->bind_param("s", $destination);
+$destStmt->execute();
+$row = $destStmt->get_result()->fetch_assoc();
+$destStmt->close();
+
+if ($row) {
+    $destination_id = $row['DestinationID'];
+    $linkStmt = $connection->prepare("INSERT INTO package_destination (PackageID, DestinationID) VALUES (?, ?)");
+    $linkStmt->bind_param("ii", $package_id, $destination_id);
+    $linkStmt->execute();
+    $linkStmt->close();
+} else {
+    // destination doesn't exist yet — insert it first
+    $newDest = $connection->prepare("INSERT INTO destination (Country, City, Climate, Description) VALUES (?, ?, ?, ?)");
+    // bind and execute with the form data...
+}
+
+
+
     // =========================
     // ACCOMMODATION LOOKUP
     // =========================
