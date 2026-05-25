@@ -1,8 +1,9 @@
 
 
-
-<?php include 'agency_header.php'; ?>
-<link rel="stylesheet" href="group_trips.css">
+<?php
+$page_css = 'group_trips.css';
+include 'agency_header.php';
+?>
 
 <div class="group-trips-view-space">
   <div class="section-header-flex">

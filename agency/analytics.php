@@ -1,5 +1,8 @@
-<?php include 'agency_header.php'; ?>
-
+<?php
+$page_css = 'analytics.css';
+include 'agency_header.php';
+?>
+<div class="analytics-page-container">  
     <div class="section-header-flex">
       <div>
         <h1>Database Analytics Engine</h1>
@@ -26,4 +29,6 @@
         <small>74% general optimization capacity matching projected target timelines.</small>
       </div>
     </div>
+
+</div>
 <?php include 'agency_footer.php'; ?>

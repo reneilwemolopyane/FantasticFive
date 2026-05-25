@@ -15,6 +15,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tripistry Agency Portal</title>
+  <link rel="stylesheet" href="agency_header.css">
+  <?php if (!empty($page_css)): ?>
+    <link rel="stylesheet" href="<?= htmlspecialchars($page_css) ?>">
+  <?php endif; ?>
  
 </head>
 <body>
