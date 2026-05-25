@@ -1,13 +1,9 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-
-if (!isset($_SESSION['agency_id'])) {
-header("Location: ../Traveller/login.php");
-  exit();
-}
+session_start();
+/*if (!isset($_SESSION['agency_id'])) {
+    header("Location: login.php");
+    exit();
+}*/
 $agency_name = $_SESSION['agency_name'] ?? 'Travel Partner';
 
 
