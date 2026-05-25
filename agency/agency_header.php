@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 
 if (!isset($_SESSION['agency_id'])) {
-  header("Location: ../login.php");
+  header("Location: FantasticFive\Traveller\login.php");
   exit();
 }
 $agency_name = $_SESSION['agency_name'] ?? 'Travel Partner';
