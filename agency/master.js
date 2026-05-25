@@ -12,7 +12,8 @@ function initLiveDashboardCounters() {
 
     const payload = { type: "FetchDashboardSummary" };
 
-    transmitAgencyRequest("api/dashboard_handler.php", payload).then(data => {
+    // UPDATED: Now targets api.php
+    transmitAgencyRequest("api.php", payload).then(data => {
         if (data) {
             if (document.getElementById("total-packages-count")) {
                 document.getElementById("total-packages-count").innerText = data.total_packages;
@@ -31,13 +32,25 @@ function initLiveDashboardCounters() {
 }
 
 function initAnalyticsEngineView() {
-    if (!document.querySelector(".analytics-grid-2x") || !document.querySelector("main h1").innerText.includes("Database")) return;
+    const metricsContainer = document.getElementById("analytics-metrics-render");
+    if (!metricsContainer) return;
 
     const payload = { type: "FetchDetailedAnalytics" };
 
-    transmitAgencyRequest("api/analytics_handler.php", payload).then(data => {
-        if (data) {
-            console.log("Analytics pulled down via JSON channel:", data);
+    // UPDATED: Now targets api.php
+    transmitAgencyRequest("api.php", payload).then(data => {
+        if (data && data.popular_packages) {
+            metricsContainer.innerHTML = ""; 
+            
+            data.popular_packages.forEach(metric => {
+                const row = `
+                    <div class="analytics-row">
+                        <span><strong>${metric.title}</strong> (${metric.destination})</span>
+                        <span>${metric.booking_count} Bookings Generated</span>
+                    </div>
+                `;
+                metricsContainer.insertAdjacentHTML("beforeend", row);
+            });
         }
     });
 }
@@ -64,9 +77,7 @@ function initCreatePackageForm() {
             startDate: document.getElementById("start_date").value.trim(),
             endDate: document.getElementById("end_date").value.trim(),
             maxPeople: document.getElementById("max_people").value.trim(),
-            type: document.getElementById("pack_type").value.trim()
-
-
+            pack_type: document.getElementById("pack_type").value.trim()
         };
 
         if (payload.price <= 0 || payload.duration <= 0) {
@@ -74,7 +85,8 @@ function initCreatePackageForm() {
             return;
         }
 
-        const responseData = await transmitAgencyRequest("api/package_handler.php", payload);
+        // UPDATED: Now targets api.php
+        const responseData = await transmitAgencyRequest("api.php", payload);
         if (responseData) {
             alert("Travel package successfully processed and pushed live to marketplace!");
             window.location.href = "manage_package.php";
@@ -83,7 +95,31 @@ function initCreatePackageForm() {
 }
 
 function initActiveCatalogManagement() {
-    if (!document.querySelector(".management-view-container") || !document.querySelector("h1").innerText.includes("Catalog")) return;
+    const tableBody = document.getElementById("packages-table-body");
+    if (!tableBody) return;
+
+    // UPDATED: Now targets api.php
+    transmitAgencyRequest("api.php", { type: "GetAllPackages" }).then(packages => {
+        if (!packages) return;
+        tableBody.innerHTML = ""; 
+        
+        packages.forEach(pkg => {
+            const rowHTML = `
+                <tr id="package-row-${pkg.id}">
+                    <td><strong>${pkg.title}</strong><br><small style="color:#64748b">${pkg.destination}</small></td>
+                    <td>R ${parseFloat(pkg.price).toLocaleString()}</td>
+                    <td>${pkg.duration} Days</td>
+                    <td><span id="status-label-${pkg.id}" class="badge">${pkg.status || 'Active'}</span></td>
+                    <td>
+                        <button class="btn-action edit" onclick="editPackagePrice(${pkg.id})">Price</button>
+                        <button class="btn-action toggle" onclick="togglePackageVisibility(${pkg.id})">Toggle</button>
+                        <button class="btn-action delete" onclick="deletePackageEntity(${pkg.id})">Drop</button>
+                    </td>
+                </tr>
+            `;
+            tableBody.insertAdjacentHTML("beforeend", rowHTML);
+        });
+    });
 
     window.editPackagePrice = async (packageId) => {
         const newPrice = prompt("Enter updated base price (ZAR):");
@@ -95,7 +131,8 @@ function initActiveCatalogManagement() {
             price: parseFloat(newPrice)
         };
 
-        const responseData = await transmitAgencyRequest("api/package_handler.php", payload);
+        // UPDATED: Now targets api.php
+        const responseData = await transmitAgencyRequest("api.php", payload);
         if (responseData) {
             window.location.reload();
         }
@@ -107,7 +144,8 @@ function initActiveCatalogManagement() {
             id: parseInt(packageId)
         };
 
-        const responseData = await transmitAgencyRequest("api/package_handler.php", payload);
+        // UPDATED: Now targets api.php
+        const responseData = await transmitAgencyRequest("api.php", payload);
         if (responseData) {
             const badge = document.getElementById(`status-label-${packageId}`);
             if (badge) {
@@ -124,7 +162,8 @@ function initActiveCatalogManagement() {
             id: parseInt(packageId)
         };
 
-        const responseData = await transmitAgencyRequest("api/package_handler.php", payload);
+        // UPDATED: Now targets api.php
+        const responseData = await transmitAgencyRequest("api.php", payload);
         if (responseData) {
             const targetRow = document.getElementById(`package-row-${packageId}`);
             if (targetRow) {
@@ -137,7 +176,31 @@ function initActiveCatalogManagement() {
 }
 
 function initClientReservationsQueue() {
-    if (!document.querySelector(".management-view-container") || !document.querySelector("h1").innerText.includes("Reservations")) return;
+    const bookingsTableBody = document.getElementById("bookings-table-body");
+    if (!bookingsTableBody) return;
+
+    // UPDATED: Now targets api.php
+    transmitAgencyRequest("api.php", { type: "GetAllBookings" }).then(bookings => {
+        if (!bookings) return;
+        bookingsTableBody.innerHTML = ""; 
+
+        bookings.forEach(booking => {
+            const rowHTML = `
+                <tr id="booking-row-${booking.id}">
+                    <td>#${booking.id}</td>
+                    <td><strong>${booking.customer_name}</strong><br><small>${booking.customer_email}</small></td>
+                    <td>${booking.package_title}</td>
+                    <td>${booking.booking_date}</td>
+                    <td><span class="badge-status-${booking.status.toLowerCase()}">${booking.status}</span></td>
+                    <td>
+                        <button class="btn-action approve" onclick="alterReservationState(${booking.id}, 'Approve')">Approve</button>
+                        <button class="btn-action reject" onclick="alterReservationState(${booking.id}, 'Reject')">Reject</button>
+                    </td>
+                </tr>
+            `;
+            bookingsTableBody.insertAdjacentHTML("beforeend", rowHTML);
+        });
+    });
 
     window.alterReservationState = async (bookingId, actionWord) => {
         let dbStatus = "";
@@ -153,7 +216,8 @@ function initClientReservationsQueue() {
             status: dbStatus
         };
 
-        const responseData = await transmitAgencyRequest("api/booking_handler.php", payload);
+        // UPDATED: Now targets api.php
+        const responseData = await transmitAgencyRequest("api.php", payload);
         if (responseData) {
             alert(`Booking status updated to ${dbStatus}.`);
             window.location.reload();
@@ -170,7 +234,8 @@ function initGroupTravelExpeditions() {
             id: parseInt(tripId)
         };
 
-        const responseData = await transmitAgencyRequest("api/group_handler.php", payload);
+        // UPDATED: Now targets api.php
+        const responseData = await transmitAgencyRequest("api.php", payload);
         if (responseData) {
             window.location.reload();
         }
@@ -203,43 +268,7 @@ async function transmitAgencyRequest(endpointUrl, payloadObject) {
         }
     } catch (networkError) {
         console.error("Critical network interface drop during API transaction:", networkError);
-        alert("Unable to communicate securely with Tripistry Core systems. Check your server connection.");
+        alert("Unable to communicate securely with Core systems.");
         return null;
     }
 }
-
-function initDashboardStats() {
-    
-    const totalPackagesCard = document.getElementById("stat-total-packages");
-    const pendingBookingsCard = document.getElementById("stat-pending-bookings");
-    const totalRevenueCard = document.getElementById("stat-total-revenue");
-
-
-    if (!totalPackagesCard || !pendingBookingsCard || !totalRevenueCard) return;
-
-   
-    fetch("api.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            action: "get_dashboard_stats" 
-        })
-    })
-    .then(response => response.json())
-    .then(payload => {
-        if (payload.status === "success") {
-     
-            totalPackagesCard.innerText = payload.data.total_packages;
-            pendingBookingsCard.innerText = payload.data.pending_bookings;
-            totalRevenueCard.innerText = "R " + parseFloat(payload.data.total_revenue).toLocaleString();
-        } else {
-            console.error("Dashboard Sync Failed: " + payload.message);
-        }
-    })
-    .catch(error => console.error("Network Error reading stats stream: ", error));
-}
-
-
-document.addEventListener("DOMContentLoaded", () => {
-    initDashboardStats();
-});

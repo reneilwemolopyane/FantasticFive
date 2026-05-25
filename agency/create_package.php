@@ -1,4 +1,7 @@
+
+
 <?php include 'agency_header.php'; ?>
+<link rel="stylesheet" href="form_style.css">
 
 <div class="form-page-container">
   <div class="form-header">
