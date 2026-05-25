@@ -1,10 +1,17 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+
 if (!isset($_SESSION['agency_id'])) {
-    header("Location: login.php");
-    exit();
+header("Location: ../Traveller/login.php");
+  exit();
 }
 $agency_name = $_SESSION['agency_name'] ?? 'Travel Partner';
+
+
+$current_page = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -24,11 +31,12 @@ $agency_name = $_SESSION['agency_name'] ?? 'Travel Partner';
       </a>
 
       <div class="nav-links">
-        <a href="agency_dashboard.php" class="nav-item">Dashboard</a>
-        <a href="create_package.php" class="nav-item">Create Package</a>
-        <a href="manage_package.php" class="nav-item">Manage Packages</a>
-        <a href="manage_booking.php" class="nav-item">Bookings</a>
-        <a href="group_trips.php" class="nav-item">Group Trips</a>
+        <a href="agency_dashboard.php" class="nav-item <?= $current_page == 'agency_dashboard.php' ? 'active' : '' ?>">Dashboard</a>
+        <a href="create_package.php" class="nav-item <?= $current_page == 'create_package.php' ? 'active' : '' ?>">Create Package</a>
+        <a href="manage_package.php" class="nav-item <?= $current_page == 'manage_package.php' ? 'active' : '' ?>">Manage Packages</a>
+        <a href="manage_booking.php" class="nav-item <?= $current_page == 'manage_booking.php' ? 'active' : '' ?>">Bookings</a>
+        <a href="group_trips.php" class="nav-item <?= $current_page == 'group_trips.php' ? 'active' : '' ?>">Group Trips</a>
+        <a href="analytics.php" class="nav-item <?= $current_page == 'analytics.php' ? 'active' : '' ?>">Analytics</a>
       </div>
 
       <div class="nav-right">
