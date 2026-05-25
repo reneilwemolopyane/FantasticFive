@@ -1,9 +1,9 @@
 <?php
 session_start();
-if (!isset($_SESSION['agency_id'])) {
+/*if (!isset($_SESSION['agency_id'])) {
     header("Location: login.php");
     exit();
-}
+}*/
 $agency_name = $_SESSION['agency_name'] ?? 'Travel Partner';
 ?>
 <!DOCTYPE html>

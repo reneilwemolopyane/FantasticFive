@@ -1,5 +1,6 @@
 
 <?php
+
 require_once("config.php");
 header("Content-Type: application/json");
 
@@ -330,152 +331,244 @@ if ($data["type"] === "Login") {
             $payload["average_rating"]  = $agency["Average_rating"];
         }
     }
-    if($data["type"] === "CreatePackage") {
-    // 1. Gather text inputs
-    $packageName = isset($_POST['package_name']) ? trim($_POST['package_name']) : null;
-    $destination = isset($_POST['destination']) ? trim($_POST['destination']) : null;
-    $price       = isset($_POST['price']) ? (float)$_POST['price'] : null;
-    $duration    = isset($_POST['duration']) ? (int)$_POST['duration'] : null;
-    $description = isset($_POST['description']) ? trim($_POST['description']) : null;
-    $start_date  = isset($_POST['start_date']) ? $_POST['start_date'] : null;
-    $end_date    = isset($_POST['end_date']) ? $_POST['end_date'] : null;
-    $pack_type   = isset($_POST['pack_type']) ? trim($_POST['pack_type']) : null;   
+ 
+    
+    
+}
+   if($data["type"] === "CreatePackage") {
 
-    // 2. Process File Uploads (Multiple Images)
-    $uploadedImageNames = [];
-    $uploadDir = 'uploads/'; // Make sure this folder exists on your server!
+    $agency_id = $_SESSION['agency_id'];
+
+    // =========================
+    // FORM DATA
+    // =========================
+
+    $title = trim($_POST['Title']);
+    $destination = trim($_POST['destination']);
+
+    $price = (float) $_POST['price'];
+
+    $duration = (int) $_POST['duration'];
+
+    $description = trim($_POST['description']);
+
+    $start_date = $_POST['start_date'];
+
+    $end_date = $_POST['end_date'];
+
+    $max_people = (int) $_POST['max_people'];
+
+    $pack_type = trim($_POST['pack_type']);
+
+    $accommodation = trim($_POST['accommodation']);
+
+    $flights = trim($_POST['flights']);
+
+    $restaurants = trim($_POST['restaurants']);
+
+    $transport = trim($_POST['transport']);
+
+    $attractions = trim($_POST['attractions']);
+
+    // =========================
+    // IMAGE UPLOADS
+    // =========================
+
+    $uploadedImages = [];
+
+    $uploadDir = "uploads/";
+
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
 
     if (!empty($_FILES['images']['name'][0])) {
+
         foreach ($_FILES['images']['name'] as $key => $name) {
-            $tmpName  = $_FILES['images']['tmp_name'][$key];
-            $error    = $_FILES['images']['error'][$key];
-            
-            if ($error === UPLOAD_ERR_OK) {
-                // Generate unique name to prevent overwriting files
-                $fileExtension = pathinfo($name, PATHINFO_EXTENSION);
-                $uniqueName = uniqid('pkg_', true) . '.' . $fileExtension;
-                
-                // Save physical file to your server folder
-                if (move_uploaded_file($tmpName, $uploadDir . $uniqueName)) {
-                    $uploadedImageNames[] = $uniqueName;
-                }
+
+            $tmpName = $_FILES['images']['tmp_name'][$key];
+
+            $error = $_FILES['images']['error'][$key];
+
+            if ($error === 0) {
+
+                $extension = pathinfo($name, PATHINFO_EXTENSION);
+
+                $newName = uniqid() . "." . $extension;
+
+                move_uploaded_file(
+                    $tmpName,
+                    $uploadDir . $newName
+                );
+
+                $uploadedImages[] = $newName;
             }
         }
     }
 
-    // Convert the array of file names to a JSON string
-    $imagesJson = json_encode($uploadedImageNames);
+    $imagesJson = json_encode($uploadedImages);
 
-    try {
-        // 3. MySQLi Prepared Statement (Added Images, removed trailing comma)
-        $stmt = $connection->prepare("
-            INSERT INTO package (Title, Destination, Price, Start_date, End_date, Pack_type, Duration, Description, Images)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    // =========================
+    // INSERT PACKAGE
+    // =========================
+
+    $stmt = $connection->prepare("
+        INSERT INTO package
+        (
+            AgencyID,
+            Max_people,
+            Duration,
+            Start_date,
+            End_date,
+            Title,
+            Pack_type,
+            Description,
+            Price,
+            Flights,
+            Restaurants,
+            Transport,
+            Attractions,
+            Images
+        )
+        VALUES
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ");
+    $is_group_trip = isset($_POST['is_group_trip']);
+
+    $stmt->bind_param(
+        "iiisssssisssss",
+        $agency_id,
+        $max_people,
+        $duration,
+        $start_date,
+        $end_date,
+        $title,
+        $pack_type,
+        $description,
+        $price,
+        $flights,
+        $restaurants,
+        $transport,
+        $attractions,
+        $imagesJson
+    );
+    
+
+    $stmt->execute();
+
+    $package_id = $connection->insert_id;
+
+    $stmt->close();
+
+    if ($is_group_trip) {
+
+    $departure_date = $_POST['departure_date'];
+
+    $max_seats = (int) $_POST['max_seats'];
+
+    $groupStmt = $connection->prepare("
+        INSERT INTO group_trip
+        (
+            PackageID,
+            AgencyID,
+            DepartureDate,
+            MaxSeats
+        )
+        VALUES
+        (?, ?, ?, ?)
+    ");
+
+    $groupStmt->bind_param(
+        "iisi",
+        $package_id,
+        $agency_id,
+        $departure_date,
+        $max_seats
+    );
+
+    $groupStmt->execute();
+
+    $groupStmt->close();
+}
+
+    // =========================
+    // DESTINATION TABLE
+    // =========================
+
+    $destinationStmt = $connection->prepare("
+        INSERT INTO package_destination
+        (
+            PackageID,
+            Destination_name
+        )
+        VALUES
+        (?, ?)
+    ");
+
+    $destinationStmt->bind_param(
+        "is",
+        $package_id,
+        $destination
+    );
+
+    $destinationStmt->execute();
+
+    $destinationStmt->close();
+
+    // =========================
+    // ACCOMMODATION LOOKUP
+    // =========================
+
+    $accStmt = $connection->prepare("
+        SELECT AccommodationID
+        FROM accommodation
+        WHERE Name = ?
+        LIMIT 1
+    ");
+
+    $accStmt->bind_param(
+        "s",
+        $accommodation
+    );
+
+    $accStmt->execute();
+
+    $result = $accStmt->get_result();
+
+    if ($row = $result->fetch_assoc()) {
+
+        $accommodation_id = $row['AccommodationID'];
+
+        $linkStmt = $connection->prepare("
+            INSERT INTO accommodation_package
+            (
+                AccommodationID,
+                PackageID
+            )
+            VALUES
+            (?, ?)
         ");
-        
-        // Data Types map to: s = string, d = double/float, i = integer
-        // $packageName (s), $destination (s), $price (d), $start_date (s), $end_date (s), $pack_type (s), $duration (i), $description (s), $imagesJson (s)
-        $stmt->bind_param("ssdssss", $Title, $destination, $price, $start_date, $end_date, $pack_type, $duration, $description, $imagesJson);
-        
-        $stmt->execute();
-        $stmt->close();
 
-        // 4. Send back success response
-        http_response_code(201);
-        echo json_encode([
-            "status" => "success", 
-            "message" => "Package created successfully with images!"
-        ]);
+        $linkStmt->bind_param(
+            "ii",
+            $accommodation_id,
+            $package_id
+        );
 
-    } catch (Exception $e) {
-        // Handle database execution errors safely
-        http_response_code(500);
-        echo json_encode([
-            "status" => "error", 
-            "message" => "Failed to create package: " . $e->getMessage()
-        ]);
+        $linkStmt->execute();
+
+        $linkStmt->close();
     }
-}
-else {
-    http_response_code(405);
-    echo json_encode(["status" => "error", "message" => "Invalid request method."]);
-}
 
-    respond(200, "success", $payload);
+    $accStmt->close();
+
+    echo json_encode([
+        "status" => "success",
+        "message" => "Package created successfully"
+    ]);
 }
 
 
 
 respond(400, "error", "Unknown type: " . htmlspecialchars($data["type"]));
 ?>
-/*if($data["type"] === "CreatePackage") {
-    // 1. Gather text inputs
-    $packageName = isset($_POST['package_name']) ? trim($_POST['package_name']) : null;
-    $destination = isset($_POST['destination']) ? trim($_POST['destination']) : null;
-    $price       = isset($_POST['price']) ? (float)$_POST['price'] : null;
-    $duration    = isset($_POST['duration']) ? (int)$_POST['duration'] : null;
-    $description = isset($_POST['description']) ? trim($_POST['description']) : null;
-    $start_date  = isset($_POST['start_date']) ? $_POST['start_date'] : null;
-    $end_date    = isset($_POST['end_date']) ? $_POST['end_date'] : null;
-    $pack_type   = isset($_POST['pack_type']) ? trim($_POST['pack_type']) : null;   
-
-    // 2. Process File Uploads (Multiple Images)
-    $uploadedImageNames = [];
-    $uploadDir = 'uploads/'; // Make sure this folder exists on your server!
-
-    if (!empty($_FILES['images']['name'][0])) {
-        foreach ($_FILES['images']['name'] as $key => $name) {
-            $tmpName  = $_FILES['images']['tmp_name'][$key];
-            $error    = $_FILES['images']['error'][$key];
-            
-            if ($error === UPLOAD_ERR_OK) {
-                // Generate unique name to prevent overwriting files
-                $fileExtension = pathinfo($name, PATHINFO_EXTENSION);
-                $uniqueName = uniqid('pkg_', true) . '.' . $fileExtension;
-                
-                // Save physical file to your server folder
-                if (move_uploaded_file($tmpName, $uploadDir . $uniqueName)) {
-                    $uploadedImageNames[] = $uniqueName;
-                }
-            }
-        }
-    }
-
-    // Convert the array of file names to a JSON string
-    $imagesJson = json_encode($uploadedImageNames);
-
-    try {
-        // 3. MySQLi Prepared Statement (Added Images, removed trailing comma)
-        $stmt = $connection->prepare("
-            INSERT INTO package (Title, Destination, Price, Start_date, End_date, Pack_type, Duration, Description, Images)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        ");
-        
-        // Data Types map to: s = string, d = double/float, i = integer
-        // $packageName (s), $destination (s), $price (d), $start_date (s), $end_date (s), $pack_type (s), $duration (i), $description (s), $imagesJson (s)
-        $stmt->bind_param("ssdssss", $Title, $destination, $price, $start_date, $end_date, $pack_type, $duration, $description, $imagesJson);
-        
-        $stmt->execute();
-        $stmt->close();
-
-        // 4. Send back success response
-        http_response_code(201);
-        echo json_encode([
-            "status" => "success", 
-            "message" => "Package created successfully with images!"
-        ]);
-
-    } catch (Exception $e) {
-        // Handle database execution errors safely
-        http_response_code(500);
-        echo json_encode([
-            "status" => "error", 
-            "message" => "Failed to create package: " . $e->getMessage()
-        ]);
-    }
-}
-else {
-    http_response_code(405);
-    echo json_encode(["status" => "error", "message" => "Invalid request method."]);
-} */
-
