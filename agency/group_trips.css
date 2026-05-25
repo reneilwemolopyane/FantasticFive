@@ -1,18 +1,93 @@
-.trip-card {
+/* Container Box Layout */
+.trip-profile-card {
   background: white;
   padding: 24px;
   border-radius: 12px;
   margin-bottom: 24px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  overflow: hidden;
 }
-.progress-bar {
+
+/* ================================================================= */
+/* FIX: IMAGE LOGO/BANNER SIZE CONSTRAINT TUNING                    */
+/* ================================================================= */
+.card-hero-banner {
+  position: relative;
+  width: 100%;
+  height: 200px;       /* Restricts the banner section from expanding */
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.card-hero-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;   /* Forces the giant picture to scale down cleanly */
+  display: block;
+}
+
+/* Floating Departure Date Tag */
+.departure-tag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(15, 23, 42, 0.85);
+  color: white;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+}
+
+/* Progress Bar Tracking System Adjustments */
+.progress-track-rail {
   height: 10px;
   background: #e2e8f0;
   border-radius: 20px;
   margin: 12px 0;
+  overflow: hidden;
 }
-.progress {
+
+.progress-fill-indicator {
   height: 100%;
-  background: #2dd4bf;
+  background: #2dd4bf; /* Sleek Teal fill color matching your design style */
   border-radius: 20px;
+  transition: width 0.3s ease;
+}
+
+/* Content Text Styling */
+.duration-sub {
+  color: #64748b;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  margin-bottom: 16px;
+}
+
+.metrics-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #0f172a;
+}
+
+.percentage-caption {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-align: right;
+}
+
+.btn-manage-group {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-manage-group:hover {
+  background: #1d4ed8;
 }
