@@ -20,12 +20,12 @@ include 'agency_header.php';
         </ul>
       </div>
 
-      <div class="chart-container-card">
-        <h3>Booking Patterns & Performance Trends</h3>
-        <p class="muted-text">Conversion efficiency status indicator tracking metrics:</p>
-        <div class="trend-indicator-bar-mock">
-          <span class="trend-fill" style="width: 74%;"></span>
-        </div>
+ <div class="chart-container-card">
+  <h3>Most Booked Destinations</h3>
+  <ul class="analytics-data-list" id="analytics-metrics-render">
+    <li style="color: #64748b;">Loading metrics engine records...</li>
+  </ul>
+</div>
         <small>74% general optimization capacity matching projected target timelines.</small>
       </div>
     </div>

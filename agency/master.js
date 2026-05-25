@@ -12,7 +12,6 @@ function initLiveDashboardCounters() {
 
     const payload = { type: "FetchDashboardSummary" };
 
-    // UPDATED: Now targets api.php
     transmitAgencyRequest("api.php", payload).then(data => {
         if (data) {
             if (document.getElementById("total-packages-count")) {
@@ -22,7 +21,7 @@ function initLiveDashboardCounters() {
                 document.getElementById("active-bookings-count").innerText = data.active_bookings;
             }
             if (document.getElementById("revenue-sum")) {
-                document.getElementById("revenue-sum").innerText = "R" + parseFloat(data.revenue_collected).toLocaleString();
+                document.getElementById("revenue-sum").innerText = "R" + parseFloat(data.revenue_collected).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             }
             if (document.getElementById("active-groups-count")) {
                 document.getElementById("active-groups-count").innerText = data.group_trips;
@@ -32,24 +31,24 @@ function initLiveDashboardCounters() {
 }
 
 function initAnalyticsEngineView() {
-    const metricsContainer = document.getElementById("analytics-metrics-render");
+    // Check both potential list targets across dashboard extensions and analytics page views
+    const metricsContainer = document.getElementById("analytics-metrics-render") || document.querySelector(".analytics-data-list");
     if (!metricsContainer) return;
 
     const payload = { type: "FetchDetailedAnalytics" };
 
-    // UPDATED: Now targets api.php
     transmitAgencyRequest("api.php", payload).then(data => {
         if (data && data.popular_packages) {
-            metricsContainer.innerHTML = ""; 
+            metricsContainer.innerHTML = ""; // Clear existing hardcoded rows
             
             data.popular_packages.forEach(metric => {
-                const row = `
-                    <div class="analytics-row">
+                const itemHTML = `
+                    <li>
                         <span><strong>${metric.title}</strong> (${metric.destination})</span>
-                        <span>${metric.booking_count} Bookings Generated</span>
-                    </div>
+                        <strong>${metric.booking_count} Bookings</strong>
+                    </li>
                 `;
-                metricsContainer.insertAdjacentHTML("beforeend", row);
+                metricsContainer.insertAdjacentHTML("beforeend", itemHTML);
             });
         }
     });
@@ -69,15 +68,15 @@ function initCreatePackageForm() {
             price: parseFloat(document.getElementById("price").value || 0),
             duration: parseInt(document.getElementById("duration").value || 0),
             description: document.getElementById("description").value.trim(),
-            accommodation: document.getElementById("accommodation").value.trim(),
-            flights: document.getElementById("flights").value.trim(),
-            restaurants: document.getElementById("restaurants").value.trim(),
-            transport: document.getElementById("transport").value.trim(),
-            attractions: document.getElementById("attractions").value.trim(),
-            startDate: document.getElementById("start_date").value.trim(),
-            endDate: document.getElementById("end_date").value.trim(),
-            maxPeople: document.getElementById("max_people").value.trim(),
-            pack_type: document.getElementById("pack_type").value.trim()
+            accommodation: document.getElementById("accommodation").value?.trim() || "",
+            flights: document.getElementById("flights").value?.trim() || "",
+            restaurants: document.getElementById("restaurants").value?.trim() || "",
+            transport: document.getElementById("transport").value?.trim() || "",
+            attractions: document.getElementById("attractions").value?.trim() || "",
+            startDate: document.getElementById("start_date")?.value || "",
+            endDate: document.getElementById("end_date")?.value || "",
+            maxPeople: document.getElementById("max_people")?.value || "10",
+            pack_type: document.getElementById("pack_type")?.value || "Leisure"
         };
 
         if (payload.price <= 0 || payload.duration <= 0) {
@@ -85,7 +84,6 @@ function initCreatePackageForm() {
             return;
         }
 
-        // UPDATED: Now targets api.php
         const responseData = await transmitAgencyRequest("api.php", payload);
         if (responseData) {
             alert("Travel package successfully processed and pushed live to marketplace!");
@@ -98,22 +96,32 @@ function initActiveCatalogManagement() {
     const tableBody = document.getElementById("packages-table-body");
     if (!tableBody) return;
 
-    // UPDATED: Now targets api.php
     transmitAgencyRequest("api.php", { type: "GetAllPackages" }).then(packages => {
         if (!packages) return;
-        tableBody.innerHTML = ""; 
+        tableBody.innerHTML = ""; // Clear placeholders
         
+        if (packages.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#64748b; padding:2rem;">No active travel packages found.</td></tr>`;
+            return;
+        }
+
         packages.forEach(pkg => {
+            // Preserves image fallback rules and matches the full 7-column layout layout of manage_package.php
+            const imageSrc = pkg.image_url ? pkg.image_url : "../frontend/Japan_package.jpeg";
             const rowHTML = `
                 <tr id="package-row-${pkg.id}">
-                    <td><strong>${pkg.title}</strong><br><small style="color:#64748b">${pkg.destination}</small></td>
-                    <td>R ${parseFloat(pkg.price).toLocaleString()}</td>
-                    <td>${pkg.duration} Days</td>
-                    <td><span id="status-label-${pkg.id}" class="badge">${pkg.status || 'Active'}</span></td>
+                    <td><div class="thumb-crop"><img src="${imageSrc}" alt="${pkg.title}"></div></td>
+                    <td><strong>${pkg.title}</strong></td>
+                    <td>${pkg.destination}</td>
+                    <td class="monospaced-currency">R${parseFloat(pkg.price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    <td>${pkg.duration} Scheduled Days</td>
+                    <td><span id="status-label-${pkg.id}" class="status-badge live">${pkg.status || 'Active'}</span></td>
                     <td>
-                        <button class="btn-action edit" onclick="editPackagePrice(${pkg.id})">Price</button>
-                        <button class="btn-action toggle" onclick="togglePackageVisibility(${pkg.id})">Toggle</button>
-                        <button class="btn-action delete" onclick="deletePackageEntity(${pkg.id})">Drop</button>
+                        <div class="action-btn-cluster">
+                            <button class="btn-action edit" onclick="editPackagePrice(${pkg.id})">Update Price</button>
+                            <button class="btn-action toggle" onclick="togglePackageVisibility(${pkg.id})">Delist Package</button>
+                            <button class="btn-action delete" onclick="deletePackageEntity(${pkg.id})">Delete</button>
+                        </div>
                     </td>
                 </tr>
             `;
@@ -131,7 +139,6 @@ function initActiveCatalogManagement() {
             price: parseFloat(newPrice)
         };
 
-        // UPDATED: Now targets api.php
         const responseData = await transmitAgencyRequest("api.php", payload);
         if (responseData) {
             window.location.reload();
@@ -144,12 +151,18 @@ function initActiveCatalogManagement() {
             id: parseInt(packageId)
         };
 
-        // UPDATED: Now targets api.php
         const responseData = await transmitAgencyRequest("api.php", payload);
         if (responseData) {
             const badge = document.getElementById(`status-label-${packageId}`);
             if (badge) {
                 badge.innerText = responseData.new_status;
+                if(responseData.new_status === "Delisted" || responseData.new_status === "Hidden") {
+                    badge.style.background = "#ef4444";
+                    badge.style.color = "#ffffff";
+                } else {
+                    badge.style.background = ""; // Falls back to default status-badge design rules
+                    badge.style.color = "";
+                }
             }
         }
     };
@@ -162,7 +175,6 @@ function initActiveCatalogManagement() {
             id: parseInt(packageId)
         };
 
-        // UPDATED: Now targets api.php
         const responseData = await transmitAgencyRequest("api.php", payload);
         if (responseData) {
             const targetRow = document.getElementById(`package-row-${packageId}`);
@@ -179,22 +191,35 @@ function initClientReservationsQueue() {
     const bookingsTableBody = document.getElementById("bookings-table-body");
     if (!bookingsTableBody) return;
 
-    // UPDATED: Now targets api.php
     transmitAgencyRequest("api.php", { type: "GetAllBookings" }).then(bookings => {
         if (!bookings) return;
         bookingsTableBody.innerHTML = ""; 
 
+        if (bookings.length === 0) {
+            bookingsTableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#64748b; padding:2rem;">No client reservations pending processing.</td></tr>`;
+            return;
+        }
+
         bookings.forEach(booking => {
+            // Matches the full 7-column structural schema layout of manage_booking.php
+            const statusStyle = booking.status.toUpperCase() === "PENDING" ? "background:#fef3c7; color:#d97706;" : "";
             const rowHTML = `
                 <tr id="booking-row-${booking.id}">
-                    <td>#${booking.id}</td>
-                    <td><strong>${booking.customer_name}</strong><br><small>${booking.customer_email}</small></td>
+                    <td class="monospaced-currency">#TRP${booking.id}</td>
+                    <td>
+                        <strong>${booking.customer_name}</strong><br>
+                        <small class="muted-text">${booking.customer_email}</small>
+                    </td>
                     <td>${booking.package_title}</td>
                     <td>${booking.booking_date}</td>
-                    <td><span class="badge-status-${booking.status.toLowerCase()}">${booking.status}</span></td>
+                    <td class="monospaced-currency">R${parseFloat(booking.price || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    <td><span class="status-badge live" id="booking-status-${booking.id}" style="${statusStyle}">${booking.status}</span></td>
                     <td>
-                        <button class="btn-action approve" onclick="alterReservationState(${booking.id}, 'Approve')">Approve</button>
-                        <button class="btn-action reject" onclick="alterReservationState(${booking.id}, 'Reject')">Reject</button>
+                        <div class="action-btn-cluster center-content">
+                            <button class="btn-action approve" onclick="alterReservationState(${booking.id}, 'Approve')">Approve</button>
+                            <button class="btn-action toggle" onclick="alterReservationState(${booking.id}, 'Reject')">Reject</button>
+                            <button class="btn-action delete" onclick="alterReservationState(${booking.id}, 'Cancel')">Cancel</button>
+                        </div>
                     </td>
                 </tr>
             `;
@@ -216,7 +241,6 @@ function initClientReservationsQueue() {
             status: dbStatus
         };
 
-        // UPDATED: Now targets api.php
         const responseData = await transmitAgencyRequest("api.php", payload);
         if (responseData) {
             alert(`Booking status updated to ${dbStatus}.`);
@@ -234,7 +258,6 @@ function initGroupTravelExpeditions() {
             id: parseInt(tripId)
         };
 
-        // UPDATED: Now targets api.php
         const responseData = await transmitAgencyRequest("api.php", payload);
         if (responseData) {
             window.location.reload();
