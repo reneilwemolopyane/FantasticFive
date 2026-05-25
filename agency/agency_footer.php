@@ -1,3 +1,3 @@
-</main> <script src="agency_master.js" ></script>
+</main> <script src="master.js" ></script>
 </body>
 </html>

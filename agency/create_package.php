@@ -1,8 +1,9 @@
 
 
-<?php include 'agency_header.php'; ?>
-<link rel="stylesheet" href="form_style.css">
-
+<?php
+$page_css = 'form_style.css';
+include 'agency_header.php';
+?>
 <div class="form-page-container">
   <div class="form-header">
     <h1>Create Travel Package</h1>

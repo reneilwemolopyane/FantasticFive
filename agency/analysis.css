@@ -12,7 +12,10 @@ body {
 }
 
 
-
+.analytics-page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
 
 .navbar {
   position: fixed;
