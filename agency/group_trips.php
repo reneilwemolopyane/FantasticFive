@@ -1,3 +1,6 @@
+
+
+
 <?php include 'agency_header.php'; ?>
 <link rel="stylesheet" href="group_trips.css">
 
