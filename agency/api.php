@@ -257,10 +257,6 @@ if ($data["type"] === "Register") {
         ]);
     }
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> 615920c0c43885ce72ecd95546a4a199cdd83d14
 if ($data["type"] === "Login") {
 
     if (empty($data["email"]) || empty($data["password"])) {
@@ -331,7 +327,6 @@ if ($data["type"] === "Login") {
             $payload["average_rating"]  = $agency["Average_rating"];
         }
     }
-<<<<<<< HEAD
  // Set session for agency
 if ($user["User_type"] === "Agency" && isset($payload["agency_id"])) {
     $_SESSION['agency_id']   = $payload["agency_id"];
@@ -344,12 +339,6 @@ respond(200, "success", $payload);
     
 }
    if($data["type"] === "CreatePackage") {
-=======
-
-    respond(200, "success", $payload);
-}
-if($data["type"] === "CreatePackage") {
->>>>>>> 615920c0c43885ce72ecd95546a4a199cdd83d14
 
     $agency_id = $_SESSION['agency_id'];
 
@@ -508,34 +497,6 @@ if($data["type"] === "CreatePackage") {
     // =========================
     // DESTINATION TABLE
     // =========================
-<<<<<<< HEAD
-=======
-
-    $destinationStmt = $connection->prepare("
-        INSERT INTO package_destination
-        (
-            PackageID,
-            Destination_name
-        )
-        VALUES
-        (?, ?)
-    ");
-
-    $destinationStmt->bind_param(
-        "is",
-        $package_id,
-        $destination
-    );
-
-    $destinationStmt->execute();
-
-    $destinationStmt->close();
-
-
-
-    //==== for Destination Table
-    // =========================
->>>>>>> 615920c0c43885ce72ecd95546a4a199cdd83d14
 $destStmt = $connection->prepare("SELECT DestinationID FROM destination WHERE City = ? LIMIT 1");
 $destStmt->bind_param("s", $destination);
 $destStmt->execute();
@@ -548,19 +509,8 @@ if ($row) {
     $linkStmt->bind_param("ii", $package_id, $destination_id);
     $linkStmt->execute();
     $linkStmt->close();
-<<<<<<< HEAD
 }
     
-=======
-} else {
-    // destination doesn't exist yet — insert it first
-    $newDest = $connection->prepare("INSERT INTO destination (Country, City, Climate, Description) VALUES (?, ?, ?, ?)");
-    // bind and execute with the form data...
-}
-
-
-
->>>>>>> 615920c0c43885ce72ecd95546a4a199cdd83d14
     // =========================
     // ACCOMMODATION LOOKUP
     // =========================
@@ -618,11 +568,3 @@ if ($row) {
 
 respond(400, "error", "Unknown type: " . htmlspecialchars($data["type"]));
 ?>
-<<<<<<< HEAD
-=======
-
-
-
-
-
->>>>>>> 615920c0c43885ce72ecd95546a4a199cdd83d14
