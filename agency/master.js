@@ -51,7 +51,7 @@ function initCreatePackageForm() {
 
         const payload = {
             type: "CreatePackage",
-            package_name: document.getElementById("package_name").value.trim(),
+            title: document.getElementById("package_name").value.trim(),
             destination: document.getElementById("destination").value.trim(),
             price: parseFloat(document.getElementById("price").value || 0),
             duration: parseInt(document.getElementById("duration").value || 0),

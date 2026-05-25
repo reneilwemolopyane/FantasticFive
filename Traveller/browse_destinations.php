@@ -20,6 +20,7 @@ $dest_images = [
 ];
 $fallback_image = "Japan_package.jpeg";
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
