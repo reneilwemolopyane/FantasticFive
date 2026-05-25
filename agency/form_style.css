@@ -11,8 +11,6 @@ body {
   min-height: 100vh;
 }
 
-
-
 .navbar {
   position: fixed;
   top: 0;
@@ -102,9 +100,6 @@ body {
   border-radius: 6px;
 }
 
-
-
-
 .main-content-wrapper {
   padding: 110px 24px 40px 24px;
   max-width: 1400px;
@@ -132,8 +127,6 @@ h1 {
   font-size: 0.95rem;
 }
 
-
-
 .package-form {
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -160,6 +153,20 @@ fieldset legend {
   margin-bottom: 18px;
 }
 
+.check-group-row label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: #0f172a !important;
+}
+
+.check-group-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
 .form-grid-2x {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -182,6 +189,8 @@ label {
 
 input[type="text"], 
 input[type="number"], 
+input[type="date"],
+select,
 textarea {
   width: 100%;
   padding: 10px 14px;
@@ -189,9 +198,11 @@ textarea {
   border-radius: 6px;
   font-size: 0.9rem;
   transition: border-color 0.2s;
+  background: #fff;
 }
 
 input:focus, 
+select:focus,
 textarea:focus {
   outline: none;
   border-color: #2563eb;
@@ -232,4 +243,22 @@ textarea:focus {
 
 .btn-primary-action:hover {
   background: #1d4ed8;
+}
+
+
+.form-image-preview-wrapper {
+  margin-top: 12px;
+  width: 100%;
+  max-height: 180px;
+  overflow: hidden;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+}
+
+.form-image-preview-wrapper img,
+.group-trip-sidebar-logo {
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  display: block;
 }

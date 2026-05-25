@@ -51,7 +51,7 @@ function initCreatePackageForm() {
 
         const payload = {
             type: "CreatePackage",
-            title: document.getElementById("package_name").value.trim(),
+            title: document.getElementById("Title").value.trim(),
             destination: document.getElementById("destination").value.trim(),
             price: parseFloat(document.getElementById("price").value || 0),
             duration: parseInt(document.getElementById("duration").value || 0),
@@ -60,7 +60,13 @@ function initCreatePackageForm() {
             flights: document.getElementById("flights").value.trim(),
             restaurants: document.getElementById("restaurants").value.trim(),
             transport: document.getElementById("transport").value.trim(),
-            attractions: document.getElementById("attractions").value.trim()
+            attractions: document.getElementById("attractions").value.trim(),
+            startDate: document.getElementById("start_date").value.trim(),
+            endDate: document.getElementById("end_date").value.trim(),
+            maxPeople: document.getElementById("max_people").value.trim(),
+            type: document.getElementById("pack_type").value.trim()
+
+
         };
 
         if (payload.price <= 0 || payload.duration <= 0) {
@@ -201,3 +207,39 @@ async function transmitAgencyRequest(endpointUrl, payloadObject) {
         return null;
     }
 }
+// This initialization function boots up automatically when the dashboard loads
+function initDashboardStats() {
+    // 1. Identify your visual metric elements on the page via ID selectors
+    const totalPackagesCard = document.getElementById("stat-total-packages");
+    const pendingBookingsCard = document.getElementById("stat-pending-bookings");
+    const totalRevenueCard = document.getElementById("stat-total-revenue");
+
+    // Failsafe: If these HTML cards don't exist on the current page view, halt execution safely
+    if (!totalPackagesCard || !pendingBookingsCard || !totalRevenueCard) return;
+
+    // 2. Dispatch a background background API pipeline call down to api.php
+    fetch("api.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            action: "get_dashboard_stats" // Maps directly to Case 5 in api.php
+        })
+    })
+    .then(response => response.json())
+    .then(payload => {
+        if (payload.status === "success") {
+            // 3. Swap out old static mock strings with live, reactive database counts!
+            totalPackagesCard.innerText = payload.data.total_packages;
+            pendingBookingsCard.innerText = payload.data.pending_bookings;
+            totalRevenueCard.innerText = "R " + parseFloat(payload.data.total_revenue).toLocaleString();
+        } else {
+            console.error("Dashboard Sync Failed: " + payload.message);
+        }
+    })
+    .catch(error => console.error("Network Error reading stats stream: ", error));
+}
+
+// Ensure this function fires automatically as soon as the DOM finishes building
+document.addEventListener("DOMContentLoaded", () => {
+    initDashboardStats();
+});
