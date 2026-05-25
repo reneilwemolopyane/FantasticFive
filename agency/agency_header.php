@@ -3,14 +3,14 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Security login check
+
 if (!isset($_SESSION['agency_id'])) {
-    header("Location: login.php");
-    exit();
+  header("Location: ../login.php");
+  exit();
 }
 $agency_name = $_SESSION['agency_name'] ?? 'Travel Partner';
 
-// Dynamic Active Tab Detection System
+
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>

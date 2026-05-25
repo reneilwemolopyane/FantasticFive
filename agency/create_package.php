@@ -1,7 +1,6 @@
 <?php include 'agency_header.php'; ?>
 
-
-    <div class="form-page-container">
+ <div class="form-page-container">
       <div class="form-header">
         <h1>Create Travel Package</h1>
         <p class="subtitle">Broadcast a new comprehensive trip offering out to the traveler marketplace.</p>
