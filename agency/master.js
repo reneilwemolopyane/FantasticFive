@@ -98,7 +98,7 @@ function initActiveCatalogManagement() {
 
     transmitAgencyRequest("api.php", { type: "GetAllPackages" }).then(packages => {
         if (!packages) return;
-        tableBody.innerHTML = ""; // Clear placeholders
+        tableBody.innerHTML = ""; 
         
         if (packages.length === 0) {
             tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#64748b; padding:2rem;">No active travel packages found.</td></tr>`;
@@ -106,7 +106,7 @@ function initActiveCatalogManagement() {
         }
 
         packages.forEach(pkg => {
-            // Preserves image fallback rules and matches the full 7-column layout layout of manage_package.php
+           
             const imageSrc = pkg.image_url ? pkg.image_url : "../frontend/Japan_package.jpeg";
             const rowHTML = `
                 <tr id="package-row-${pkg.id}">
@@ -160,7 +160,7 @@ function initActiveCatalogManagement() {
                     badge.style.background = "#ef4444";
                     badge.style.color = "#ffffff";
                 } else {
-                    badge.style.background = ""; // Falls back to default status-badge design rules
+                    badge.style.background = ""; 
                     badge.style.color = "";
                 }
             }
@@ -201,7 +201,7 @@ function initClientReservationsQueue() {
         }
 
         bookings.forEach(booking => {
-            // Matches the full 7-column structural schema layout of manage_booking.php
+        
             const statusStyle = booking.status.toUpperCase() === "PENDING" ? "background:#fef3c7; color:#d97706;" : "";
             const rowHTML = `
                 <tr id="booking-row-${booking.id}">
