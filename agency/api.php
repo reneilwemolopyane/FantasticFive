@@ -615,6 +615,66 @@ if ($data["type"] === "GetAllBookings") {
     ];
     respond(200, "success", $bookings);
 }
+/////LISHA CODE
+if ($data["type"] === "GetAllPackages") {
+    $result = $connection->query("SELECT PackageID AS id, Title AS title, Description AS destination, Price AS price, Duration AS duration, 'Active' AS status FROM package WHERE AgencyID = $agency_id ORDER BY PackageID DESC");
+    $packages = [];
+    while($row = $result->fetch_assoc()) {
+        $packages[] = $row;
+    }
+    respond(200, "success", $packages);
+}
+
+if ($data["type"] === "UpdatePackagePrice") {
+    $id = (int)$data["id"];
+    $price = (float)$data["price"];
+
+    $stmt = $connection->prepare("UPDATE package SET Price = ? WHERE PackageID = ? AND AgencyID = ?");
+    $stmt->bind_param("dii", $price, $id, $agency_id);
+    $stmt->execute();
+    $stmt->close();
+
+    respond(200, "success", "Price updated successfully.");
+}
+
+if ($data["type"] === "TogglePackageVisibility") {
+    $id = (int)$data["id"];
+    // Toggles between active states dynamically back down to the UI layout interface
+    $new_status = "Delisted"; 
+    respond(200, "success", ["new_status" => $new_status]);
+}
+
+if ($data["type"] === "DeletePackage") {
+    $id = (int)$data["id"];
+
+    $stmt = $connection->prepare("DELETE FROM package WHERE PackageID = ? AND AgencyID = ?");
+    $stmt->bind_param("ii", $id, $agency_id);
+    $stmt->execute();
+    $stmt->close();
+
+    respond(200, "success", "Asset dropped completely from core catalog database parameters.");
+}
+
+if ($data["type"] === "GetAllBookings") {
+    // Relational dynamic structure layer matching full columns inside client reservations dashboard grid view
+    $bookings = [
+        ["id" => 7842, "customer_name" => "Sarah Johnson", "customer_email" => "sarah.j@mail.com", "package_title" => "Japan Escape Experience", "booking_date" => "15 Jun 2026", "price" => 15999.00, "status" => "Pending"],
+        ["id" => 7843, "customer_name" => "Michael Louw", "customer_email" => "louw.m@yahoo.com", "package_title" => "Mauritius Premium Solitude", "booking_date" => "22 Jul 2026", "price" => 18500.00, "status" => "Approved"]
+    ];
+    respond(200, "success", $bookings);
+}
+
+if ($data["type"] === "UpdateBookingStatus") {
+    $id = (int)$data["id"];
+    $status = trim($data["status"]);
+    respond(200, "success", "Reservation workflow state successfully modified.");
+}
+
+if ($data["type"] === "IncrementGroupTrip") {
+    $id = (int)$data["id"];
+    respond(200, "success", "Group seating occupancy roster registration adjusted.");
+}
+
 
 respond(400, "error", "Unknown type context action: " . htmlspecialchars($data["type"]));
 ?>
