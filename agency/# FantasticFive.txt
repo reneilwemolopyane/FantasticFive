@@ -1,0 +1,39 @@
+# FantasticFive
+
+
+
+analytics.php
+This is the dashboard page where the travel agency can see how well they are doing. It pulls real-time numbers from the database to show their total packages, total bookings, and overall revenue. It also features a dynamic metrics list that displays the agency's most popular travel packages based on customer bookings. As new packages get booked, these stats update to show business growth.
+
+api.php
+This is the most important backend file. It acts as the traffic controller for the entire application. Whenever the frontend website needs to load data, save a new package, change a price, or delete something, it sends a request to this file. It checks who is logged in so agencies only see their own packages. Most importantly, it uses prepared statements ($connection->prepare) to safely handle data, which completely stops SQL Injection hackers from breaking the database.
+
+create_package.php
+This is the page that has the form for creating a new travel package. The agency can type in the Title, Description (Destination), Price, and Duration in days, and upload images. When the agency clicks the save button, JavaScript collects all this information and passes it to api.php so it can be saved securely as a new row inside the 'package' table in the database.
+
+group_trips.php
+This page lets the agency manage group trips and tours. It shows information about upcoming trips, including when they depart and how many seats are left. It features a progress bar that visually shows how close a trip is to being fully booked (Seats Filled vs Max Limit). Agencies can use this page to monitor group capacity in real time.
+
+manage_booking.php
+This is the order management page where the agency can see every trip that customers have booked. It lists the traveler's name, email, what package they bought, and the date. It has simple action buttons that let the agency approve or reject a pending booking request. 
+
+manage_package.php
+This is the main catalog page where agencies can look after the packages they have already created. It fetches all packages belonging to that specific AgencyID from the database and displays them in a clean table. From here, the agency can click 'Update Price' to instantly change the cost of a trip using a popup prompt, or click 'Delete' to completely remove a package from the market.
+
+master.js
+This is the main JavaScript engine that runs on the frontend browser. Instead of making the user wait for pages to slowly reload every time they click a button, this file uses 'Fetch' API calls to communicate with api.php in the background. It handles normal text settings as JSON data, and handles file uploads smoothly. It keeps the web application feeling fast, smooth, and modern.
+
+logout.php
+This file safely logs the user out of the system. It does two simple things: it tells the backend server to destroy the current PHP session, and it tells the web browser to erase the saved user keys from its localStorage. Once everything is completely wiped clean, it redirects the browser back to the login screen so no one else can sneak into the account.
+
+
+1. Why We Used LocalStorage 
+- We use this to remember basic things like the user's ID type (Traveller or Agency) and their welcome name.
+- It stays saved even if you close the browser tab, so the user doesn't have to keep logging back in every single minute.
+- It is cleared completely only when the user clicks the "Logout" button.
+
+2. Why We Used PHP Sessions 
+- We use this to lock down critical security keys like the real 'agency_id' or database access tokens.
+- Because it lives on the server, hackers and malicious browser extensions cannot see or tamper with this data.
+- It automatically self-destructs and disappears the moment the user completely closes their browser, keeping the system safe.
+
