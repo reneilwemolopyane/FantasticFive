@@ -32,7 +32,7 @@
       <option value="REJECTED">Rejected</option>
       <option value="CANCELLED">Cancelled</option>
     </select>
-    <button onclick="exportCSV()" style="padding:.5rem 1rem; border:1px solid #cbd5e1; border-radius:8px; background:#f8fafc; font-size:.9rem; cursor:pointer;">⬇ Export CSV</button>
+   
   </div>
 
   <div class="table-responsive-wrapper">
@@ -79,206 +79,367 @@
 <script>
 // ── State ────────────────────────────────────────────────────────────────────
 let allBookings = [];
-let pendingAction = null; // { id, status }
+let pendingAction = null;
 
 // ── Bootstrap ────────────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
   loadBookings();
-  document.getElementById("bk-search").addEventListener("input", renderTable);
-  document.getElementById("bk-filter-status").addEventListener("change", renderTable);
+
+  document.getElementById("bk-search")
+    .addEventListener("input", renderTable);
+
+  document.getElementById("bk-filter-status")
+    .addEventListener("change", renderTable);
 });
 
-// ── Fetch ─────────────────────────────────────────────────────────────────────
+// ── Fetch bookings ───────────────────────────────────────────────────────────
 async function loadBookings() {
-  const data = await transmitAgencyRequest("api.php", { type: "GetAllBookings" });
+
+  const data = await transmitAgencyRequest("api.php", {
+    type: "GetAllBookings"
+  });
+
   if (!data) return;
+
   allBookings = data;
+
+  console.log("BOOKINGS:", allBookings);
+
   renderTable();
   updateCounts();
 }
 
-// ── Counts ────────────────────────────────────────────────────────────────────
+// ── Update dashboard counters ────────────────────────────────────────────────
 function updateCounts() {
+
   document.getElementById("count-pending").textContent =
-    allBookings.filter(b => b.status?.toUpperCase() === "PENDING").length;
+    allBookings.filter(b =>
+      b.status?.toUpperCase() === "PENDING"
+    ).length;
+
   document.getElementById("count-approved").textContent =
-    allBookings.filter(b => b.status?.toUpperCase() === "APPROVED").length;
+    allBookings.filter(b =>
+      b.status?.toUpperCase() === "CONFIRMED"
+    ).length;
+
   document.getElementById("count-closed").textContent =
-    allBookings.filter(b => ["REJECTED","CANCELLED"].includes(b.status?.toUpperCase())).length;
+    allBookings.filter(b =>
+      ["REJECTED", "CANCELLED"].includes(
+        b.status?.toUpperCase()
+      )
+    ).length;
 }
 
-// ── Filter + render ───────────────────────────────────────────────────────────
+// ── Render table ─────────────────────────────────────────────────────────────
 function renderTable() {
-  const search  = document.getElementById("bk-search").value.toLowerCase();
-  const statusF = document.getElementById("bk-filter-status").value.toUpperCase();
+
+  const search =
+    document.getElementById("bk-search")
+      .value.toLowerCase();
+
+  const statusF =
+    document.getElementById("bk-filter-status")
+      .value.toUpperCase();
 
   const filtered = allBookings.filter(b => {
-    const matchText = [b.customer_name, b.customer_email, b.package_title]
-      .some(s => (s || "").toLowerCase().includes(search));
-    const matchStatus = !statusF || b.status?.toUpperCase() === statusF;
+
+    const matchText = [
+      b.customer_name,
+      b.customer_email,
+      b.package_title
+    ].some(s =>
+      (s || "").toLowerCase().includes(search)
+    );
+
+    const matchStatus =
+      !statusF ||
+      b.status?.toUpperCase() === statusF;
+
     return matchText && matchStatus;
   });
 
-  const tbody    = document.getElementById("bookings-table-body");
-  const emptyMsg = document.getElementById("bk-empty-msg");
+  const tbody =
+    document.getElementById("bookings-table-body");
+
+  const emptyMsg =
+    document.getElementById("bk-empty-msg");
 
   if (filtered.length === 0) {
+
     tbody.innerHTML = "";
+
     emptyMsg.style.display = "block";
+
     return;
   }
+
   emptyMsg.style.display = "none";
 
   tbody.innerHTML = filtered.map(b => {
-    const st        = (b.status || "Pending").toUpperCase();
+
+    const st = (b.status || "PENDING").toUpperCase();
+
     const badgeStyle = statusStyle(st);
-    const isClosed  = ["APPROVED","REJECTED","CANCELLED"].includes(st);
+
+    const isClosed = [
+      "CONFIRMED",
+      "REJECTED",
+      "CANCELLED"
+    ].includes(st);
 
     return `
       <tr id="booking-row-${b.id}">
-        <td class="monospaced-currency">#TRP${b.id}</td>
+
+        <td class="monospaced-currency">
+          #TRP${b.id}
+        </td>
+
         <td>
           <strong>${escHtml(b.customer_name)}</strong><br>
-          <small class="muted-text">${escHtml(b.customer_email)}</small>
+          <small class="muted-text">
+            ${escHtml(b.customer_email)}
+          </small>
         </td>
+
         <td>${escHtml(b.package_title)}</td>
+
         <td>${escHtml(b.booking_date)}</td>
-        <td style="text-align:center;">${b.seats || 1}</td>
-        <td class="monospaced-currency">R${fmtMoney(b.price)}</td>
-        <td><span id="booking-status-${b.id}" class="status-badge" style="${badgeStyle}">${escHtml(b.status)}</span></td>
+
+        <td style="text-align:center;">
+          ${b.seats || 1}
+        </td>
+
+        <td class="monospaced-currency">
+          R${fmtMoney(b.price)}
+        </td>
+
+        <td>
+          <span
+            id="booking-status-${b.id}"
+            class="status-badge"
+            style="${badgeStyle}"
+          >
+            ${escHtml(b.status)}
+          </span>
+        </td>
+
         <td>
           <div class="action-btn-cluster center-content">
+
             ${!isClosed || st === 'PENDING' ? `
-              <button class="btn-action approve" onclick="confirmAction(${b.id},'APPROVED')"  ${st==='APPROVED'?'disabled':''}>Approve</button>
-              <button class="btn-action toggle"  onclick="confirmAction(${b.id},'REJECTED')"  ${st==='REJECTED'?'disabled':''}>Reject</button>
+
+              <button
+                class="btn-action approve"
+                onclick="confirmAction(${b.id}, 'CONFIRMED')"
+                ${st === 'CONFIRMED' ? 'disabled' : ''}
+              >
+                Confirm
+              </button>
+
+              <button
+                class="btn-action toggle"
+                onclick="confirmAction(${b.id}, 'REJECTED')"
+                ${st === 'REJECTED' ? 'disabled' : ''}
+              >
+                Reject
+              </button>
+
             ` : ''}
-            <button class="btn-action delete" onclick="confirmAction(${b.id},'CANCELLED')" ${st==='CANCELLED'?'disabled':''}>Cancel</button>
+
+            <button
+              class="btn-action delete"
+              onclick="confirmAction(${b.id}, 'CANCELLED')"
+              ${st === 'CANCELLED' ? 'disabled' : ''}
+            >
+              Cancel
+            </button>
+
           </div>
         </td>
+
       </tr>
     `;
   }).join("");
 }
 
-// ── Status badge colours ──────────────────────────────────────────────────────
+// ── Status colours ───────────────────────────────────────────────────────────
 function statusStyle(st) {
-  if (st === "APPROVED")  return "background:#dcfce7; color:#16a34a;";
-  if (st === "REJECTED")  return "background:#fee2e2; color:#dc2626;";
-  if (st === "CANCELLED") return "background:#f1f5f9; color:#64748b;";
-  return "background:#fef3c7; color:#d97706;"; // PENDING
+
+  if (st === "CONFIRMED") {
+    return "background:#dcfce7; color:#16a34a;";
+  }
+
+  if (st === "REJECTED") {
+    return "background:#fee2e2; color:#dc2626;";
+  }
+
+  if (st === "CANCELLED") {
+    return "background:#f1f5f9; color:#64748b;";
+  }
+
+  return "background:#fef3c7; color:#d97706;";
 }
 
-// ── Action modal ──────────────────────────────────────────────────────────────
+// ── Modal ────────────────────────────────────────────────────────────────────
 const actionLabels = {
-  APPROVED:  { title: "Approve Booking",  colour: "#16a34a" },
-  REJECTED:  { title: "Reject Booking",   colour: "#dc2626" },
-  CANCELLED: { title: "Cancel Booking",   colour: "#64748b" }
+
+  CONFIRMED: {
+    title: "Confirm Booking",
+    colour: "#16a34a"
+  },
+
+  REJECTED: {
+    title: "Reject Booking",
+    colour: "#dc2626"
+  },
+
+  CANCELLED: {
+    title: "Cancel Booking",
+    colour: "#64748b"
+  }
 };
 
 function confirmAction(bookingId, status) {
-  const bk  = allBookings.find(b => b.id === bookingId);
-  const cfg = actionLabels[status] || { title: status, colour: "#3b82f6" };
 
-  pendingAction = { id: bookingId, status };
+  const bk = allBookings.find(
+    b => b.id === bookingId
+  );
 
-  document.getElementById("modal-action-title").textContent = cfg.title;
-  document.getElementById("modal-action-body").innerHTML =
-    `Booking <strong>#TRP${bookingId}</strong> for <strong>${escHtml(bk?.customer_name || '')}</strong><br>
-     Package: <em>${escHtml(bk?.package_title || '')}</em><br><br>
-     This will mark the reservation as <strong>${status}</strong>.`;
+  const cfg = actionLabels[status];
 
-  const btn = document.getElementById("modal-confirm-btn");
+  pendingAction = {
+    id: bookingId,
+    status
+  };
+
+  document.getElementById("modal-action-title")
+    .textContent = cfg.title;
+
+  document.getElementById("modal-action-body")
+    .innerHTML = `
+      Booking <strong>#TRP${bookingId}</strong>
+      for <strong>${escHtml(bk?.customer_name || '')}</strong><br>
+
+      Package:
+      <em>${escHtml(bk?.package_title || '')}</em><br><br>
+
+      This will mark the reservation as
+      <strong>${status}</strong>.
+    `;
+
+  const btn =
+    document.getElementById("modal-confirm-btn");
+
   btn.textContent = cfg.title;
   btn.style.background = cfg.colour;
   btn.style.color = "#fff";
 
-  document.getElementById("action-modal").style.display = "flex";
+  document.getElementById("action-modal")
+    .style.display = "flex";
 }
 
 function closeActionModal() {
-  document.getElementById("action-modal").style.display = "none";
+
+  document.getElementById("action-modal")
+    .style.display = "none";
+
   pendingAction = null;
 }
 
-document.getElementById("modal-confirm-btn").addEventListener("click", async () => {
-  if (!pendingAction) return;
-  const { id, status } = pendingAction;
-  closeActionModal();
-  await alterReservationState(id, status);
-});
+document.getElementById("modal-confirm-btn")
+  .addEventListener("click", async () => {
 
+    if (!pendingAction) return;
+
+    const { id, status } = pendingAction;
+
+    closeActionModal();
+
+    await alterReservationState(id, status);
+  });
+
+// ── Update booking status ────────────────────────────────────────────────────
 async function alterReservationState(bookingId, status) {
+
   const res = await transmitAgencyRequest("api.php", {
     type: "UpdateBookingStatus",
-    id: bookingId,
+    booking_id: bookingId,
     status
   });
 
   if (res) {
-    const bk = allBookings.find(b => b.id === bookingId);
-    if (bk) bk.status = status;
+
+    const bk = allBookings.find(
+      b => b.id === bookingId
+    );
+
+    if (bk) {
+      bk.status = status;
+    }
+
     renderTable();
     updateCounts();
   }
 }
 
-// ── CSV Export ────────────────────────────────────────────────────────────────
-function exportCSV() {
-  const headers = ["Booking ID","Traveller","Email","Package","Date","Seats","Total (ZAR)","Status"];
-  const rows = allBookings.map(b => [
-    `#TRP${b.id}`,
-    b.customer_name,
-    b.customer_email,
-    b.package_title,
-    b.booking_date,
-    b.seats || 1,
-    parseFloat(b.price || 0).toFixed(2),
-    b.status
-  ]);
-
-  const csv = [headers, ...rows].map(r =>
-    r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(",")
-  ).join("\n");
-
-  const blob = new Blob([csv], { type: "text/csv" });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement("a");
-  a.href     = url;
-  a.download = `bookings_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// ── Helpers ──────────────────────────────────────────────────────────────────
 function fmtMoney(v) {
-  return parseFloat(v || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  return parseFloat(v || 0)
+    .toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
 }
 
 function escHtml(str) {
-  return String(str || '').replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+
+  return String(str || '')
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
+// ── API helper ───────────────────────────────────────────────────────────────
 async function transmitAgencyRequest(url, payload) {
+
   try {
-    const token = sessionStorage.getItem("api_key");
-    if (token && !payload.api_key) payload.api_key = token;
+
+    const token =
+      sessionStorage.getItem("api_key");
+
+    if (token && !payload.api_key) {
+      payload.api_key = token;
+    }
 
     const response = await fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify(payload)
     });
 
     const json = await response.json();
-    if (json.status === "success") return json.data;
+
+    console.log("API RESPONSE:", json);
+
+    if (json.status === "success") {
+      return json.data;
+    }
+
     alert("Error: " + json.data);
+
     return null;
+
   } catch (err) {
+
     console.error("Network error:", err);
-    alert("Unable to reach server.");
+
     return null;
   }
 }
 </script>
-
 <?php include 'agency_footer.php'; ?>
